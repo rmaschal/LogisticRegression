@@ -12,7 +12,7 @@ def read_images(path):
     with open(path, 'rb') as f_images:
         magic, num, rows, cols = struct.unpack(">IIII", f_images.read(16))
         images = np.fromfile(f_images, dtype=np.uint8)
-        images.reshape(num, rows, cols)
+        images = images.reshape(num, rows, cols)
         
     return num, images
 
