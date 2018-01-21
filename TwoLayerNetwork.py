@@ -9,8 +9,8 @@ from random import *
 #
 def get_prediction(x, W, b):
     vsigmoid = np.vectorize(sigmoid)
-
-    return vsigmoid(np.dot(W,X)+b)
+    
+    return vsigmoid(np.dot(np.transpose(W),x)+b)
 
 # Assumes classes are labelled as 0 -- n-1
 def get_class_prediction(y_p):
@@ -58,7 +58,7 @@ def update_weights(X, Y, W, b, learn_rate=1):
         y_p = get_prediction(x, W, b)
         
         # There should be a better way to do this
-        for j in range(len(y_p))
+        for j in range(len(y_p)):
             dW[:, j] += (y_p[j] - y[j]) * x
             db[j] += (y_p[j] - y[j])
 
@@ -79,12 +79,34 @@ def train_classifier(X, Y, iterations, learn_rate, num_classes):
 
     for i in range(iterations):
         W, b = update_weights(X, Y, W, b, learn_rate)
-
-        cost = cost_function(X, Y, W, b)
-        print("Iteration: " + str(i) + "Cost: " + str(cost))
+        
+        cost = np.sum(cost_function(X, Y, W, b))
+        print("Iteration: " + str(i+1) + "  Cost: " + str(cost))
     
     return W, b
 
-if __name__ == "__main__":
-    num, images, labels = get_training_images()
+def get_accuracy(X, Y, W, b):
+    num_correct = 0.0
+    num, rows, cols = X.shape
+    X = X.reshape(num, rows*cols)
 
+    for i in range(len(X)):
+        y_p = get_prediction(X[i], W, b)
+        y_p = get_class_prediction(y_p)
+
+        if Y[i] == y_p:
+            num_correct+=1
+
+    return num_correct / len(X)
+if __name__ == "__main__":
+    num, images, labels = get_training_data()
+    num, test_images, test_labels = get_test_data()
+
+    blabels = label_to_binary_vector(labels, 10)
+    images = images / 255.0
+    test_images = test_images / 255.0
+
+    W, b = train_classifier(images, blabels, 10, 1, 10)
+
+    acc = get_accuracy(test_images, test_labels, W, b)
+    print("Accuracy: " + str(acc))

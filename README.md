@@ -16,3 +16,9 @@ for other models as well
 
 The end goal for this project should be a class/utilities generic enough 
 to work for any labelled dataset, which can be specified
+
+Current Results:
+Two Layer Neural Network:
+10 iters :  ~72% accuracy
+100 iters:  ~88% accuracy
+

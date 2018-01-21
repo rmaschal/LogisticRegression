@@ -21,11 +21,15 @@ def read_images(path):
         
     return num, images
 
-def label_to_binary_vector(lbl):
-    vec = np.zeros(10)
-    vec[lbl] = 1.0
+# For k-class classification, convert lbl 0 -- numclasses-1 to a binary vector 
+# whose only nonzero entry is at the index corresponding to the class
+def label_to_binary_vector(labels, num_classes): 
+    mat = np.zeros((len(labels),num_classes))
 
-    return vec
+    for i in range(len(labels)):
+        mat[i, labels[i]] = 1.0
+
+    return mat
 
 def get_training_data():
     num1, labels = read_labels(TRAINING_LABELS_PATH)
