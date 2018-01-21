@@ -1,47 +1,21 @@
 import numpy
 
 from ReadMNIST import *
+from ClassificationUtils import *
 from math import exp, log
 from random import *
-
-TRAINING_IMAGES_PATH = 'MNIST/train-images-idx3-ubyte'
-TRAINING_LABELS_PATH = 'MNIST/train-labels-idx1-ubyte'
-TESTING_IMAGES_PATH = 'MNIST/t10k-images-idx3-ubyte'
-TESTING_LABELS_PATH = 'MNIST/t10k-labels-idx1-ubyte'
-
-def get_training_data():
-    num1, labels = read_labels(TRAINING_LABELS_PATH)
-    num2, images = read_images(TRAINING_IMAGES_PATH)
-    assert num1 == num2, "Number of training images and labels differ"
-
-    return num1, images, labels 
-
-def get_test_data():
-    num1, labels = read_labels(TESTING_LABELS_PATH)
-    num2, images = read_images(TESTING_IMAGES_PATH)
-    assert num1 == num2, "Number of testing images and labels differ"
-    
-    return num1, images, labels
-
-def loss_function(y, y_p):
-    try:
-        return - ( y * np.log(y_p) + (1-y) * np.log( 1 - y_p))
-    except Exception as err:
-        return 100.0
 
 def cost_function(X, Y, W, b ):
     cost = 0.0
 
     for i in range(len(X)):
         y_p = get_prediction(X[i],  W, b)
-        cost += loss_function(Y[i], y_p)
+        cost += log_loss_function(Y[i], y_p)
+        
 
     cost /= len(X)
 
     return cost
-
-def sigmoid(x):
-    return 1 / (1 + np.exp( -x))
 
 def update_weights(X, Y, W, b, learn_rate=1):
     dW = 0.0
@@ -83,6 +57,7 @@ def train_classifier(X, Y, iterations, learn_rate):
 def get_prediction(X, W, b):
     return sigmoid(np.dot(W,X)+b)
 
+# Create binary labels. 'elt' labelled as 1, all else as 0
 def get_binary_labels(lbls, elt):
     new_lbls = np.zeros(lbls.shape)
 
@@ -118,8 +93,8 @@ if __name__ == "__main__":
 
     # Scale image to be represented by values between 0 and 1
     # Prevents some math overflow errors
-    images = images/ 256.0
-    test_images = test_images / 256.0
+    images = images/ 255.0
+    test_images = test_images / 255.0
 
     # classify the digit 8
     W, b = train_classifier(images,get_binary_labels(labels,1), 100, 1)    
